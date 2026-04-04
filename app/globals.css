@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-border: var(--border);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+}
+
+:root {
+    --radius: 0.75rem;
+    --background: #0a0a0f;
+    --foreground: #e0e0e0;
+    --card: #111118;
+    --card-foreground: #e0e0e0;
+    --popover: #111118;
+    --popover-foreground: #e0e0e0;
+    --primary: #e0e0e0;
+    --primary-foreground: #0a0a0f;
+    --secondary: #1a1a24;
+    --secondary-foreground: #ccc;
+    --muted: #1a1a24;
+    --muted-foreground: #9ca3af;
+    --accent: #1a1a24;
+    --accent-foreground: #ccc;
+    --destructive: #ef4444;
+    --border: #222;
+    --input: #333;
+    --ring: #555;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+    html {
+        @apply font-sans;
+    }
+}
