@@ -273,6 +273,7 @@ export default function Home() {
                         </div>
                         <div className="text-xs text-muted-foreground space-x-3">
                             <span>Orbital data: <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener" className="underline hover:text-foreground">JPL Horizons</a></span>
+                            <span>Ground stations: <a href="https://eyes.nasa.gov/dsn/dsn.html" target="_blank" rel="noopener" className="underline hover:text-foreground">DSN Now</a></span>
                             <span>Schedule: <a href="https://www.nasa.gov/missions/artemis/nasas-artemis-ii-moon-mission-daily-agenda/" target="_blank" rel="noopener" className="underline hover:text-foreground">NASA Flight Plan</a></span>
                         </div>
                         <div className="text-xs text-muted-foreground">

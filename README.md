@@ -12,12 +12,14 @@ Real-time mission tracker for NASA's Artemis program. Currently tracking **Artem
 - **Telemetry charts** - Distance, velocity, and range rate over time
 - **Crew activity schedule** - Transcribed from NASA's published flight plan
 - **Milestone tracking** - Mission milestones with completion status and countdown timers
+- **Deep Space Network status** - Live ground station connections, signal strength, measured range (updates every 10s)
 - **Unit toggle** - km/mi switching
 - **Live stream** - Embedded NASA broadcast
 
 ## Data Sources
 
 - [JPL Horizons API](https://ssd.jpl.nasa.gov/horizons/) - spacecraft and Moon ephemeris data
+- [NASA DSN Now](https://eyes.nasa.gov/dsn/dsn.html) - live Deep Space Network ground station status ([XML feed](https://eyes.nasa.gov/dsn/data/dsn.xml))
 - [NASA flight plan](https://www.nasa.gov/missions/artemis/nasas-artemis-ii-moon-mission-daily-agenda/) - crew activity schedule and milestones
 
 ## Tech Stack
@@ -45,8 +47,9 @@ This repo includes a `render.yaml` blueprint for Render.com. Connect the repo an
 1. **Startup**: Fetches spacecraft + Moon ephemeris from JPL Horizons for the full mission at 5-minute intervals
 2. **Caching**: Stores all data points in SQLite with WAL mode for concurrent reads
 3. **Live updates**: Every 5 minutes, checks for new data points from Horizons and backfills gaps
-4. **Frontend**: Polls `/api/telemetry` every 60 seconds; MET clock ticks client-side every second
-5. **Playback**: Timeline scrubber and play controls are fully client-side, using cached trajectory data
+4. **DSN**: Polls NASA's DSN XML feed every 10 seconds for live ground station status
+5. **Frontend**: Polls `/api/telemetry` every 60 seconds; MET clock ticks client-side every second
+6. **Playback**: Timeline scrubber and play controls are fully client-side, using cached trajectory data
 
 ## Future Missions
 
