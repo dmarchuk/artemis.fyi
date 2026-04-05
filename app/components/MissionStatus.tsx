@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
 import DsnStatus from './DsnStatus'
 import { formatMET, formatDistUnit, formatVelUnit, formatCountdown } from '@/lib/format'
 import { MILESTONES } from '@/lib/milestones'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { TelemetryRow, Phase, Milestone, Units, CrewActivity } from '@/lib/types'
 
 const EARTH_RADIUS_KM = 6371
@@ -63,33 +62,16 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 }
 
 function WithInfo({ tip, children }: { tip: string; children: React.ReactNode }) {
-    const [open, setOpen] = useState(false)
-    const ref = useRef<HTMLButtonElement>(null)
-
-    // Close on outside tap
-    useEffect(() => {
-        if (!open) return
-        const handler = (e: PointerEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-        }
-        document.addEventListener('pointerdown', handler)
-        return () => document.removeEventListener('pointerdown', handler)
-    }, [open])
-
     return (
-        <Tooltip open={open} onOpenChange={setOpen}>
-            <TooltipTrigger
-                ref={ref}
-                className="inline-flex items-center cursor-help"
-                onClick={(e) => { e.preventDefault(); setOpen(o => !o) }}
-            >
+        <Popover>
+            <PopoverTrigger className="inline-flex items-center cursor-help">
                 {children}
                 <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-muted-foreground/30 text-muted-foreground/50 hover:text-muted-foreground hover:border-muted-foreground/50 transition-colors ml-1.5 shrink-0 text-[9px] leading-none font-medium">
                     i
                 </span>
-            </TooltipTrigger>
-            <TooltipContent side="left" className="max-w-[220px]">{tip}</TooltipContent>
-        </Tooltip>
+            </PopoverTrigger>
+            <PopoverContent side="left" className="max-w-[260px] text-xs">{tip}</PopoverContent>
+        </Popover>
     )
 }
 
@@ -195,7 +177,12 @@ export default function MissionStatus({
     return (
         <div className="border-b border-border px-4 py-3 space-y-3 shrink-0 overflow-hidden">
             <div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-0.5">Mission elapsed time</div>
+                <div className="flex items-center justify-between">
+                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-0.5">Mission elapsed time</div>
+                    <WithInfo tip="Trajectory and position from JPL Horizons API (updated every 60s, interpolated between 5-min data points). Ground station status live from NASA's Deep Space Network (every 10s). Crew schedule from NASA's published flight plan.">
+                        <span className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground cursor-help transition-colors">Data sources</span>
+                    </WithInfo>
+                </div>
                 <div className="text-lg font-bold font-mono tabular-nums">{formatMET(metSeconds)}</div>
                 <div className="text-xs text-muted-foreground">Day {missionDay} of 10</div>
             </div>
@@ -339,8 +326,8 @@ export default function MissionStatus({
 
             {isLive && <DsnStatus />}
 
-            <div className="text-xs text-muted-foreground text-center pt-2">
-                {isLive ? 'Auto-refreshes every 60s' : 'Scrubbing historical data'}
+            <div className="text-[11px] text-muted-foreground text-center pt-2">
+                {isLive ? '' : 'Scrubbing historical data'}
             </div>
         </div>
     )

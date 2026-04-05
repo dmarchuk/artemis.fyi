@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { formatMET, formatDistVal, formatDistUnit, formatVelocity, formatVelUnit } from '@/lib/format'
-import type { TelemetryRow, Phase, Units } from '@/lib/types'
+import { interpolateTrajectory, type TelemetryRow, type Phase, type Units } from '@/lib/types'
 
 interface Props {
     trajectory: TelemetryRow[]
@@ -12,6 +12,11 @@ interface Props {
     nowTimestamp: number
     units: Units
     onDisplayTimeChange: (ts: number) => void
+}
+
+function formatFull(km: number, units: Units): string {
+    const val = units === 'imperial' ? km * 0.621371 : km
+    return Math.round(val).toLocaleString()
 }
 
 const PADDING = { top: 20, right: 20, bottom: 20, left: 20 }
@@ -244,12 +249,7 @@ export default function TrajectoryChart({
 
     if (!transform || trajectory.length === 0) return null
 
-    // Current display point
-    let displayIdx = 0
-    for (let i = 0; i < trajectory.length; i++) {
-        if (trajectory[i].timestamp <= displayTimestamp) displayIdx = i
-    }
-    const displayPoint = trajectory[displayIdx]
+    const displayPoint = interpolateTrajectory(trajectory, displayTimestamp) ?? trajectory[0]
     const orionPos = transform.toSvg(displayPoint.position_x_km, displayPoint.position_y_km)
     const moonPos = transform.toSvg(displayPoint.moon_x_km, displayPoint.moon_y_km)
     const earthPos = transform.toSvg(0, 0)
@@ -358,7 +358,7 @@ export default function TrajectoryChart({
                 <circle cx={orionPos.x} cy={orionPos.y} r={6} fill="none" stroke="white" strokeWidth={1.5} />
                 <text x={orionPos.x + 14} y={orionPos.y - 4} fill="white" fillOpacity={0.9} fontSize="13" fontWeight="700">Orion</text>
                 <text x={orionPos.x + 14} y={orionPos.y + 10} fill="white" fillOpacity={0.55} fontSize="11">
-                    {formatDistVal(displayPoint.earth_distance_km, units)} {formatDistUnit(units)}
+                    {formatFull(displayPoint.earth_distance_km, units)} {formatDistUnit(units)}
                 </text>
 
                 {(() => {
@@ -423,9 +423,9 @@ export default function TrajectoryChart({
 
         <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center bg-black/80 border-t border-white/10 px-3 py-1.5 text-[11px] shrink-0 whitespace-nowrap gap-x-4 gap-y-0.5">
             <span><span className="text-cyan-400 uppercase mr-1.5">Speed</span><span className="font-bold tabular-nums">{formatVelocity(displayPoint.velocity_km_s, units)}</span> <span className="text-white/70">{formatVelUnit(units)}</span></span>
-            <span className="text-right sm:text-left"><span className="text-yellow-400 uppercase mr-1.5">Altitude</span><span className="font-bold tabular-nums">{formatDistVal(altitude, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
-            <span><span className="text-green-400 uppercase mr-1.5">From Earth</span><span className="font-bold tabular-nums">{formatDistVal(displayPoint.earth_distance_km, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
-            <span className="text-right sm:text-left"><span className="text-purple-400 uppercase mr-1.5">From Moon</span><span className="font-bold tabular-nums">{formatDistVal(displayPoint.moon_distance_km, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
+            <span className="text-right sm:text-left"><span className="text-yellow-400 uppercase mr-1.5">Altitude</span><span className="font-bold tabular-nums">{formatFull(altitude, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
+            <span><span className="text-green-400 uppercase mr-1.5">From Earth</span><span className="font-bold tabular-nums">{formatFull(displayPoint.earth_distance_km, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
+            <span className="text-right sm:text-left"><span className="text-purple-400 uppercase mr-1.5">From Moon</span><span className="font-bold tabular-nums">{formatFull(displayPoint.moon_distance_km, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
         </div>
         </div>
     )

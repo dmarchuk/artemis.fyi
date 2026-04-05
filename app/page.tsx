@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import type { TelemetryData, TelemetryRow, Units } from '@/lib/types'
+import { interpolateTrajectory, type TelemetryData, type TelemetryRow, type Units } from '@/lib/types'
 import { LAUNCH_TIME, SPLASHDOWN_TIME, MILESTONES, PHASES } from '@/lib/milestones'
 import { CREW_ACTIVITIES } from '@/lib/activities'
 import Header from './components/Header'
@@ -154,10 +154,7 @@ export default function Home() {
     )
     const nextMilestone = MILESTONES.find((m) => m.metSeconds > metSeconds)
 
-    let displayPoint: TelemetryRow | null = data.latest
-    for (const p of data.trajectory) {
-        if (p.timestamp <= displayTime) displayPoint = p
-    }
+    const displayPoint = interpolateTrajectory(data.trajectory, displayTime) ?? data.latest
 
     return (
         <div className="min-h-screen flex flex-col">
