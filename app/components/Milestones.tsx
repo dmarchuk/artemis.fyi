@@ -2,7 +2,8 @@
 
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import { formatMET, formatCountdown } from '@/lib/format'
+import { formatCountdown } from '@/lib/format'
+import MetLabel from './MetLabel'
 import type { Milestone } from '@/lib/types'
 
 interface Props {
@@ -134,9 +135,7 @@ export default function Milestones({ milestones, metSeconds, launchTs, onJumpTo 
                                                 </span>
                                             )}
                                         </div>
-                                        <span className="text-xs font-mono text-muted-foreground shrink-0">
-                                            {formatMET(m.metSeconds)}
-                                        </span>
+                                        <MetLabel metSeconds={m.metSeconds} className="text-xs font-mono text-muted-foreground shrink-0" />
                                     </div>
                                     {!completed && m.description && (
                                         <div className="text-xs text-muted-foreground mt-0.5">{m.description}</div>

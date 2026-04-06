@@ -42,6 +42,14 @@ export function formatMET(seconds: number): string {
     return `${neg ? '-' : 'T+'}${d}d ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
+export function metToLocalTime(metSeconds: number, launchTime: Date): string {
+    const date = new Date(launchTime.getTime() + metSeconds * 1000)
+    return date.toLocaleString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric',
+        hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+    })
+}
+
 export function formatCountdown(seconds: number): string {
     if (seconds <= 0) return 'Now'
     const d = Math.floor(seconds / 86400)

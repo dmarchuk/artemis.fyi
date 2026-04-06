@@ -1,8 +1,8 @@
 'use client'
 
 import DsnStatus from './DsnStatus'
-import { formatMET, formatDistUnit, formatVelUnit, formatCountdown } from '@/lib/format'
-import { MILESTONES } from '@/lib/milestones'
+import { formatMET, formatDistUnit, formatVelUnit, formatCountdown, metToLocalTime } from '@/lib/format'
+import { MILESTONES, LAUNCH_TIME } from '@/lib/milestones'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { TelemetryRow, Phase, Milestone, Units, CrewActivity } from '@/lib/types'
 
@@ -239,6 +239,9 @@ export default function MissionStatus({
                     <div className="text-[11px] text-muted-foreground text-right">{nextMilestone.description}</div>
                     <div className="text-right text-[11px] font-mono text-orange-500/80 mt-0.5">
                         T&minus;{formatCountdown(nextMilestone.metSeconds - metSeconds)}
+                    </div>
+                    <div className="text-right text-[11px] text-muted-foreground/60 mt-0.5">
+                        {metToLocalTime(nextMilestone.metSeconds, LAUNCH_TIME)}
                     </div>
                 </div>
             )}
