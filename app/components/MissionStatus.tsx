@@ -156,6 +156,37 @@ const ACTIVITY_COLORS: Record<string, string> = {
     science: '#3b82f6', comm: '#8b5cf6', config: '#6b7280', rest: '#64748b',
 }
 
+function EarthMoonProgress({ point }: { point: TelemetryRow }) {
+    const dot = point.position_x_km * point.moon_x_km + point.position_y_km * point.moon_y_km + point.position_z_km * point.moon_z_km
+    const moonDist2 = point.moon_x_km ** 2 + point.moon_y_km ** 2 + point.moon_z_km ** 2
+    const pct = moonDist2 > 0 ? Math.max(0, Math.min(100, parseFloat(((dot / moonDist2) * 100).toFixed(1)))) : 0
+
+    return (
+        <div className="border-t border-border/50 pt-2">
+            <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] text-green-400 font-medium">Earth</span>
+                <span className="text-[11px] text-muted-foreground font-mono tabular-nums">{pct}%</span>
+                <span className="text-[11px] text-purple-400 font-medium">Moon</span>
+            </div>
+            <div className="relative h-2 rounded-full bg-muted/50">
+                <div className="absolute inset-0 rounded-full overflow-hidden">
+                    <div className="absolute inset-0" style={{
+                        background: 'linear-gradient(to right, #4ADE8040, transparent 30%, transparent 70%, #A855F740)',
+                    }} />
+                </div>
+                <div
+                    className="absolute top-1/2 -translate-y-1/2 w-1 h-3.5 rounded-sm transition-[left] duration-500"
+                    style={{
+                        left: `clamp(0px, ${pct}% - 2px, calc(100% - 4px))`,
+                        background: '#fff',
+                        boxShadow: '0 0 4px rgba(255,255,255,0.4)',
+                    }}
+                />
+            </div>
+        </div>
+    )
+}
+
 export default function MissionStatus({
     displayPoint, metSeconds, currentPhase, phases, nextMilestone,
     currentActivity, activities, units, viewMode, isLive,
@@ -287,30 +318,7 @@ export default function MissionStatus({
                 )}
             </div>
 
-            {displayPoint && (
-                <div className="border-t border-border/50 pt-2">
-                    <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] text-green-400 font-medium">Earth</span>
-                        <span className="text-[11px] text-muted-foreground font-mono tabular-nums">{Math.round(Math.min(100, (displayPoint.earth_distance_km / EARTH_MOON_AVG_KM) * 100))}%</span>
-                        <span className="text-[11px] text-purple-400 font-medium">Moon</span>
-                    </div>
-                    <div className="relative h-2 rounded-full bg-muted/50">
-                        <div className="absolute inset-0 rounded-full overflow-hidden">
-                            <div className="absolute inset-0" style={{
-                                background: 'linear-gradient(to right, #4ADE8040, transparent 30%, transparent 70%, #A855F740)',
-                            }} />
-                        </div>
-                        <div
-                            className="absolute top-1/2 -translate-y-1/2 w-1 h-3.5 rounded-sm transition-[left] duration-500"
-                            style={{
-                                left: `clamp(0px, ${Math.min(100, (displayPoint.earth_distance_km / EARTH_MOON_AVG_KM) * 100)}% - 2px, calc(100% - 4px))`,
-                                background: '#fff',
-                                boxShadow: '0 0 4px rgba(255,255,255,0.4)',
-                            }}
-                        />
-                    </div>
-                </div>
-            )}
+            {displayPoint && <EarthMoonProgress point={displayPoint} />}
 
             {displayPoint && viewMode === 'expert' && (
                 <div className="border-t border-border/50 pt-2">
