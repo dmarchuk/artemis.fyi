@@ -12,7 +12,7 @@ interface Props {
 export default function MetLabel({ metSeconds, className }: Props) {
     return (
         <Tooltip>
-            <TooltipTrigger className={className}>
+            <TooltipTrigger render={<span />} className={className}>
                 {formatMET(metSeconds)}
             </TooltipTrigger>
             <TooltipContent>
