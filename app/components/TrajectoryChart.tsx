@@ -291,7 +291,7 @@ export default function TrajectoryChart({
         <div ref={containerRef} className="w-full h-full flex flex-col">
         <div
             ref={chartRef}
-            className={`flex-1 min-h-0 relative select-none touch-none ${zoom > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-crosshair'}`}
+            className={`flex-1 min-h-0 relative select-none ${zoom > 1 ? 'touch-none cursor-grab active:cursor-grabbing' : 'touch-pan-y cursor-crosshair'}`}
             onMouseDown={(e) => {
                 if (e.button === 1 || zoom > 1) {
                     e.preventDefault()
