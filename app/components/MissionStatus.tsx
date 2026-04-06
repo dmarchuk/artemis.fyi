@@ -117,7 +117,7 @@ function getNarrative(
     point: TelemetryRow,
 ): string {
     const earthDistKm = point.earth_distance_km
-    const moonDistKm = point.moon_distance_km
+    const moonDistKm = point.moon_distance_km - MOON_RADIUS_KM
     const speedKmh = Math.round(point.velocity_km_s * 3600).toLocaleString()
     const moonDist2 = point.moon_x_km ** 2 + point.moon_y_km ** 2 + point.moon_z_km ** 2
     const dot = point.position_x_km * point.moon_x_km + point.position_y_km * point.moon_y_km + point.position_z_km * point.moon_z_km
