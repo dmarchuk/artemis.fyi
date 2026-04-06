@@ -27,7 +27,7 @@ export const MILESTONES: Milestone[] = [
     { name: 'Course Correction 1', description: 'First outbound trajectory adjustment', metSeconds: met(2, 1, 8, 42), type: 'maneuver' },
     { name: 'Course Correction 2', description: 'Second outbound trajectory adjustment', metSeconds: met(3, 1, 8, 42), type: 'maneuver' },
     { name: 'Course Correction 3', description: 'Third outbound trajectory adjustment', metSeconds: met(4, 4, 29, 52), type: 'maneuver' },
-    { name: 'Entering Lunar Gravity', description: "The Moon's gravity takes over as the dominant force", metSeconds: met(4, 6, 38), type: 'science' },
+    { name: 'Entering Lunar Gravity', description: "The Moon's gravity takes over as the dominant force", metSeconds: met(4, 6, 6), type: 'science' },
     { name: 'Lunar Close Approach', description: 'Closest flyby of the Moon (~6,500 km)', metSeconds: met(5, 0, 30), type: 'science' },
     { name: 'Max Earth Distance', description: 'Farthest from Earth (~407,000 km)', metSeconds: met(5, 0, 35), type: 'science' },
     { name: 'Leaving Lunar Gravity', description: "Orion exits the Moon's gravitational influence", metSeconds: met(5, 18, 53), type: 'science' },
@@ -36,7 +36,7 @@ export const MILESTONES: Milestone[] = [
     { name: 'Return Correction 3', description: 'Third return trajectory adjustment', metSeconds: met(8, 20, 29, 10), type: 'maneuver' },
     { name: 'Module Separation', description: 'Crew module separates from service module', metSeconds: met(9, 1, 9), type: 'separation' },
     { name: 'Entry Interface', description: 'Atmospheric re-entry begins at 3,000 F', metSeconds: met(9, 1, 29), type: 'entry' },
-    { name: 'Splashdown', description: 'Pacific Ocean landing', metSeconds: met(9, 1, 57), type: 'entry' },
+    { name: 'Splashdown', description: 'Pacific Ocean landing', metSeconds: met(9, 1, 46), type: 'entry' },
 ]
 
 export interface Phase {
