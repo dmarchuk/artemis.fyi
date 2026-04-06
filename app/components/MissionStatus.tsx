@@ -7,6 +7,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import type { TelemetryRow, Phase, Milestone, Units, CrewActivity } from '@/lib/types'
 
 const EARTH_RADIUS_KM = 6371
+const MOON_RADIUS_KM = 1737
 const KM_TO_MI = 0.621371
 const EARTH_MOON_AVG_KM = 384400
 const ISS_ALTITUDE_KM = 408
@@ -113,12 +114,14 @@ function getNarrative(
     metSeconds: number,
     currentPhase: Phase | undefined,
     currentActivity: CrewActivity | undefined,
-    earthDistKm: number,
-    moonDistKm: number,
-    velocityKmS: number,
+    point: TelemetryRow,
 ): string {
-    const speedKmh = Math.round(velocityKmS * 3600).toLocaleString()
-    const pctToMoon = Math.round((earthDistKm / EARTH_MOON_AVG_KM) * 100)
+    const earthDistKm = point.earth_distance_km
+    const moonDistKm = point.moon_distance_km
+    const speedKmh = Math.round(point.velocity_km_s * 3600).toLocaleString()
+    const moonDist2 = point.moon_x_km ** 2 + point.moon_y_km ** 2 + point.moon_z_km ** 2
+    const dot = point.position_x_km * point.moon_x_km + point.position_y_km * point.moon_y_km + point.position_z_km * point.moon_z_km
+    const pctToMoon = moonDist2 > 0 ? Math.min(100, Math.round((dot / moonDist2) * 100)) : 0
     const crewAction = currentActivity
         ? currentActivity.type === 'sleep' ? 'The crew is sleeping'
             : currentActivity.type === 'meal' ? 'The crew is having a meal'
@@ -220,7 +223,7 @@ export default function MissionStatus({
 
             {displayPoint && (
                 <div className="text-xs text-foreground/80 leading-relaxed italic">
-                    {getNarrative(metSeconds, currentPhase, currentActivity, displayPoint.earth_distance_km, displayPoint.moon_distance_km, displayPoint.velocity_km_s)}
+                    {getNarrative(metSeconds, currentPhase, currentActivity, displayPoint)}
                 </div>
             )}
 
@@ -324,7 +327,7 @@ export default function MissionStatus({
                 <div className="border-t border-border/50 pt-2">
                     <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1">Telemetry</div>
                     <Row label="From Earth"><span className="text-green-400">{formatNum(displayPoint.earth_distance_km, units)}</span> {distUnit}</Row>
-                    <Row label="From Moon"><span className="text-purple-400">{formatNum(displayPoint.moon_distance_km, units)}</span> {distUnit}</Row>
+                    <Row label="From Moon"><span className="text-purple-400">{formatNum(displayPoint.moon_distance_km - MOON_RADIUS_KM, units)}</span> {distUnit}</Row>
                     <Row label="Speed"><span className="text-cyan-400">{formatSpeed(displayPoint.velocity_km_s, units)}</span> {formatVelUnit(units)}</Row>
                     <Row label="Altitude"><span className="text-yellow-400">{formatNum(altitude, units)}</span> {distUnit}</Row>
                     <div className="text-[11px] text-muted-foreground text-right mt-1 italic">

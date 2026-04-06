@@ -21,6 +21,7 @@ function formatFull(km: number, units: Units): string {
 
 const PADDING = { top: 20, right: 20, bottom: 20, left: 20 }
 const EARTH_RADIUS_KM = 6371
+const MOON_RADIUS_KM = 1737
 
 export default function TrajectoryChart({
     trajectory, phases, launchTimestamp, displayTimestamp, nowTimestamp, units,
@@ -415,7 +416,7 @@ export default function TrajectoryChart({
                         Earth: {formatDistVal(hoverPoint.earth_distance_km, units)} {formatDistUnit(units)}
                     </div>
                     <div className="text-[11px] text-muted-foreground">
-                        Moon: {formatDistVal(hoverPoint.moon_distance_km, units)} {formatDistUnit(units)}
+                        Moon: {formatDistVal(hoverPoint.moon_distance_km - MOON_RADIUS_KM, units)} {formatDistUnit(units)}
                     </div>
                 </div>
             )}
@@ -425,7 +426,7 @@ export default function TrajectoryChart({
             <span><span className="text-cyan-400 uppercase mr-1.5">Speed</span><span className="font-bold tabular-nums">{formatVelocity(displayPoint.velocity_km_s, units)}</span> <span className="text-white/70">{formatVelUnit(units)}</span></span>
             <span className="text-right sm:text-left"><span className="text-yellow-400 uppercase mr-1.5">Altitude</span><span className="font-bold tabular-nums">{formatFull(altitude, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
             <span><span className="text-green-400 uppercase mr-1.5">From Earth</span><span className="font-bold tabular-nums">{formatFull(displayPoint.earth_distance_km, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
-            <span className="text-right sm:text-left"><span className="text-purple-400 uppercase mr-1.5">From Moon</span><span className="font-bold tabular-nums">{formatFull(displayPoint.moon_distance_km, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
+            <span className="text-right sm:text-left"><span className="text-purple-400 uppercase mr-1.5">From Moon</span><span className="font-bold tabular-nums">{formatFull(displayPoint.moon_distance_km - MOON_RADIUS_KM, units)}</span> <span className="text-white/70">{formatDistUnit(units)}</span></span>
         </div>
         </div>
     )
