@@ -21,7 +21,7 @@ export default function Home() {
     const [isLive, setIsLive] = useState(true)
     const [isPlaying, setIsPlaying] = useState(false)
     const [playSpeed, setPlaySpeed] = useState(720)
-    const [displayTime, setDisplayTime] = useState(Date.now() / 1000)
+    const [displayTime, setDisplayTime] = useState(() => Math.min(Date.now() / 1000, splashTs))
     const [units, setUnits] = useState<Units>(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('artemis-units')
@@ -85,7 +85,7 @@ export default function Home() {
 
     useEffect(() => {
         if (!isLive) return
-        const interval = setInterval(() => setDisplayTime(Date.now() / 1000), 1000)
+        const interval = setInterval(() => setDisplayTime(Math.min(Date.now() / 1000, splashTs)), 1000)
         return () => clearInterval(interval)
     }, [isLive])
 
@@ -130,7 +130,7 @@ export default function Home() {
     const handleGoLive = useCallback(() => {
         setIsLive(true)
         setIsPlaying(false)
-        setDisplayTime(Date.now() / 1000)
+        setDisplayTime(Math.min(Date.now() / 1000, splashTs))
     }, [])
 
     if (!data) {
