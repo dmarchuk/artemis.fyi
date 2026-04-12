@@ -1,19 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatMET } from '@/lib/format'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import CrewDialog from './CrewDialog'
 import type { Phase, CrewActivity, Units } from '@/lib/types'
-
-const CREW_AVATARS = [
-    { name: 'Reid Wiseman', initials: 'RW', role: 'Commander' },
-    { name: 'Victor Glover', initials: 'VG', role: 'Pilot' },
-    { name: 'Christina Koch', initials: 'CK', role: 'Specialist' },
-    { name: 'Jeremy Hansen', initials: 'JH', role: 'Specialist' },
-]
+import type { CrewMember } from '@/lib/missions'
 
 const ACTIVITY_STATUS: Record<string, { label: string; color: string }> = {
     sleep: { label: 'Sleeping', color: '#6366f1' },
@@ -27,27 +22,31 @@ const ACTIVITY_STATUS: Record<string, { label: string; color: string }> = {
 }
 
 interface Props {
+    missionName: string
+    missionSlug: string
     isLive: boolean
     metSeconds: number
+    totalDays: number
     currentPhase: Phase | undefined
     currentActivity: CrewActivity | undefined
+    crew: CrewMember[]
     viewMode: 'simple' | 'expert'
     onViewModeChange: (mode: 'simple' | 'expert') => void
     units: Units
     onUnitsChange: (units: Units) => void
 }
 
-export default function Header({ isLive, metSeconds, currentPhase, currentActivity, viewMode, onViewModeChange, units, onUnitsChange }: Props) {
+export default function Header({ missionName, missionSlug, isLive, metSeconds, totalDays, currentPhase, currentActivity, crew, viewMode, onViewModeChange, units, onUnitsChange }: Props) {
     const missionDay = Math.floor(metSeconds / 86400) + 1
     const [copied, setCopied] = useState(false)
     const [crewOpen, setCrewOpen] = useState(false)
 
     const handleShare = async () => {
         const metParam = Math.floor(metSeconds)
-        const url = `${window.location.origin}?t=${metParam}`
+        const url = `${window.location.origin}/${missionSlug}?t=${metParam}`
         try {
             if (navigator.share) {
-                await navigator.share({ title: 'Artemis II Tracker', url })
+                await navigator.share({ title: `${missionName} Tracker`, url })
             } else {
                 await navigator.clipboard.writeText(url)
                 setCopied(true)
@@ -64,13 +63,13 @@ export default function Header({ isLive, metSeconds, currentPhase, currentActivi
         <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
             <div className="flex items-center justify-between h-10 px-2 sm:px-3 md:px-4">
                 <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <span className="text-sm font-bold tracking-tight whitespace-nowrap">ARTEMIS II</span>
+                    <Link href="/" className="text-sm font-bold tracking-tight whitespace-nowrap hover:text-muted-foreground transition-colors">{missionName.toUpperCase()}</Link>
                     {isLive && (
                         <Badge variant="destructive" className="text-[11px] font-semibold h-5 px-1.5">
                             LIVE
                         </Badge>
                     )}
-                    <span className="text-[11px] text-muted-foreground hidden sm:inline">Day {missionDay} of 10</span>
+                    <span className="text-[11px] text-muted-foreground hidden sm:inline">Day {missionDay} of {totalDays}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs">
@@ -80,31 +79,33 @@ export default function Header({ isLive, metSeconds, currentPhase, currentActivi
                             <span className="font-medium" style={{ color: currentPhase.color }}>{currentPhase.name}</span>
                         </div>
                     )}
-                    <div className="hidden md:flex items-center gap-0.5 ml-2 cursor-pointer" onClick={() => setCrewOpen(true)}>
-                        {CREW_AVATARS.map((crew) => {
-                            const status = currentActivity ? ACTIVITY_STATUS[currentActivity.type] : null
-                            return (
-                                <Tooltip key={crew.initials}>
-                                    <TooltipTrigger className="relative cursor-pointer">
-                                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[9px] font-bold text-muted-foreground">
-                                            {crew.initials}
-                                        </div>
-                                        {status && (
-                                            <div
-                                                className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-background"
-                                                style={{ background: status.color }}
-                                            />
-                                        )}
-                                    </TooltipTrigger>
-                                    <TooltipContent side="bottom" className="text-xs">
-                                        {crew.name} - {crew.role}
-                                        {status && <span className="text-muted-foreground ml-1">({status.label})</span>}
-                                    </TooltipContent>
-                                </Tooltip>
-                            )
-                        })}
-                    </div>
-                    <CrewDialog open={crewOpen} onOpenChange={setCrewOpen} />
+                    {crew.length > 0 && (
+                        <div className="hidden md:flex items-center gap-0.5 ml-2 cursor-pointer" onClick={() => setCrewOpen(true)}>
+                            {crew.map((member) => {
+                                const status = currentActivity ? ACTIVITY_STATUS[currentActivity.type] : null
+                                return (
+                                    <Tooltip key={member.initials}>
+                                        <TooltipTrigger className="relative cursor-pointer">
+                                            <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[9px] font-bold text-muted-foreground">
+                                                {member.initials}
+                                            </div>
+                                            {status && (
+                                                <div
+                                                    className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-background"
+                                                    style={{ background: status.color }}
+                                                />
+                                            )}
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="text-xs">
+                                            {member.name} - {member.role}
+                                            {status && <span className="text-muted-foreground ml-1">({status.label})</span>}
+                                        </TooltipContent>
+                                    </Tooltip>
+                                )
+                            })}
+                        </div>
+                    )}
+                    {crew.length > 0 && <CrewDialog open={crewOpen} onOpenChange={setCrewOpen} crew={crew} />}
                 </div>
 
                 <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">

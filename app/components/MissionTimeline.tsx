@@ -17,6 +17,7 @@ interface Props {
     isPlaying: boolean
     playSpeed: number
     currentPhase: Phase | undefined
+    missionEnded: boolean
     onDisplayTimeChange: (ts: number) => void
     onPlayToggle: () => void
     onSpeedChange: (speed: number) => void
@@ -32,7 +33,7 @@ const SPEED_OPTIONS = [
 
 export default function MissionTimeline({
     phases, milestones, launchTs, splashTs, nowTs, displayTime,
-    isLive, isPlaying, playSpeed, currentPhase,
+    isLive, isPlaying, playSpeed, currentPhase, missionEnded,
     onDisplayTimeChange, onPlayToggle, onSpeedChange, onGoLive,
 }: Props) {
     const barRef = useRef<HTMLDivElement>(null)
@@ -134,7 +135,9 @@ export default function MissionTimeline({
                                 />
                             )
                         })}
-                        <div className="absolute top-0 bottom-0 left-0 bg-muted" style={{ width: `${nowProgress * 100}%` }} />
+                        {!missionEnded && (
+                            <div className="absolute top-0 bottom-0 left-0 bg-muted" style={{ width: `${nowProgress * 100}%` }} />
+                        )}
                     </div>
 
                     {milestones.map((m) => {
@@ -178,15 +181,20 @@ export default function MissionTimeline({
                 </div>
 
                 <div className="relative h-4 mt-0.5 mb-2">
-                    {Array.from({ length: 10 }, (_, i) => {
-                        const pct = (i * 86400 / missionDuration) * 100
-                        if (pct > 98) return null
-                        return (
-                            <span key={i} className="absolute text-xs text-muted-foreground -translate-x-1/2" style={{ left: `${pct}%` }}>
-                                Day {i}
-                            </span>
-                        )
-                    })}
+                    {(() => {
+                        const totalDays = Math.ceil(missionDuration / 86400)
+                        const step = totalDays > 20 ? 5 : totalDays > 12 ? 2 : 1
+                        return Array.from({ length: Math.ceil(totalDays / step) }, (_, i) => {
+                            const day = i * step
+                            const pct = (day * 86400 / missionDuration) * 100
+                            if (pct > 98) return null
+                            return (
+                                <span key={day} className="absolute text-xs text-muted-foreground -translate-x-1/2" style={{ left: `${pct}%` }}>
+                                    Day {day}
+                                </span>
+                            )
+                        })
+                    })()}
                 </div>
 
                 <div className="flex items-center justify-center gap-1.5 md:gap-2 flex-wrap">
@@ -227,17 +235,19 @@ export default function MissionTimeline({
                         ))}
                     </div>
 
-                    <Button
-                        variant={isLive ? 'destructive' : 'default'}
-                        size="sm"
-                        className={isLive
-                            ? 'text-xs h-8 px-3 font-bold animate-pulse cursor-pointer'
-                            : 'text-xs h-8 px-3 font-bold bg-red-600 hover:bg-red-500 text-white cursor-pointer'
-                        }
-                        onClick={onGoLive}
-                    >
-                        {isLive ? '● LIVE' : '● Go Live'}
-                    </Button>
+                    {!missionEnded && (
+                        <Button
+                            variant={isLive ? 'destructive' : 'default'}
+                            size="sm"
+                            className={isLive
+                                ? 'text-xs h-8 px-3 font-bold animate-pulse cursor-pointer'
+                                : 'text-xs h-8 px-3 font-bold bg-red-600 hover:bg-red-500 text-white cursor-pointer'
+                            }
+                            onClick={onGoLive}
+                        >
+                            {isLive ? '● LIVE' : '● Go Live'}
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>

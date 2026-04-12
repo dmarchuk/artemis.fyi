@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { ensureBackfilled, refreshRecent, queryTelemetry, getLatestPastRow } from '@/lib/db'
-import { LAUNCH_TIME, SPLASHDOWN_TIME } from '@/lib/milestones'
+import { getMission } from '@/lib/missions'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,17 +14,25 @@ function downsample<T>(rows: T[], maxPoints: number): T[] {
     return sampled
 }
 
-export async function GET() {
-    await ensureBackfilled()
-    await refreshRecent()
+export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url)
+    const slug = searchParams.get('mission') || 'artemis-2'
 
-    const launchSec = Math.floor(LAUNCH_TIME.getTime() / 1000)
-    const endSec = Math.floor(SPLASHDOWN_TIME.getTime() / 1000) + 3600
+    const mission = getMission(slug)
+    if (!mission) {
+        return NextResponse.json({ error: 'Unknown mission' }, { status: 404 })
+    }
 
-    const allRows = queryTelemetry(launchSec, endSec)
+    await ensureBackfilled(mission.slug, mission.ephemerisStart, mission.ephemerisEnd, mission.horizonsId)
+    await refreshRecent(mission.slug, mission.horizonsId)
+
+    const launchSec = Math.floor(mission.launchTime.getTime() / 1000)
+    const endSec = Math.floor(mission.splashdownTime.getTime() / 1000) + 3600
+
+    const allRows = queryTelemetry(mission.slug, launchSec, endSec)
 
     return NextResponse.json({
         trajectory: downsample(allRows, 1200),
-        latest: getLatestPastRow(),
+        latest: getLatestPastRow(mission.slug),
     })
 }

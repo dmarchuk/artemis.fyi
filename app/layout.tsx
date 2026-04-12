@@ -7,8 +7,8 @@ import './globals.css'
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-    title: 'Artemis II - Live Mission Tracker',
-    description: "Real-time telemetry from NASA's Artemis II mission, powered by JPL Horizons",
+    title: 'artemis.fyi - Artemis Mission Tracker',
+    description: "Real-time and historical telemetry from NASA's Artemis missions, powered by JPL Horizons",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
