@@ -135,7 +135,7 @@ export default function Milestones({ milestones, metSeconds, launchTs, onJumpTo 
                                                 </span>
                                             )}
                                         </div>
-                                        <MetLabel metSeconds={m.metSeconds} className="text-xs font-mono text-muted-foreground shrink-0" />
+                                        <MetLabel metSeconds={m.metSeconds} launchTime={new Date(launchTs * 1000)} className="text-xs font-mono text-muted-foreground shrink-0" />
                                     </div>
                                     {!completed && m.description && (
                                         <div className="text-xs text-muted-foreground mt-0.5">{m.description}</div>

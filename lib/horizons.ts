@@ -1,4 +1,3 @@
-const ORION_ID = '-1024'
 const MOON_ID = '301'
 const EARTH_CENTER = '500@399'
 
@@ -91,12 +90,12 @@ export interface TelemetryRow {
     moon_z_km: number
 }
 
-export async function fetchTelemetryRange(from: Date, to: Date, stepSize: string): Promise<TelemetryRow[]> {
+export async function fetchTelemetryRange(from: Date, to: Date, stepSize: string, spacecraftId: string = '-1024'): Promise<TelemetryRow[]> {
     const startTime = formatDate(from)
     const stopTime = formatDate(to)
 
     const [orionResult, moonResult] = await Promise.all([
-        fetchVectors(ORION_ID, EARTH_CENTER, startTime, stopTime, stepSize),
+        fetchVectors(spacecraftId, EARTH_CENTER, startTime, stopTime, stepSize),
         fetchVectors(MOON_ID, EARTH_CENTER, startTime, stopTime, stepSize),
     ])
 

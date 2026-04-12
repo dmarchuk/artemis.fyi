@@ -369,7 +369,8 @@ export default function TrajectoryChart({
                     for (let i = 0; i < sampled.length; i += step) {
                         const met = sampled[i].timestamp - launchTimestamp
                         const phase = phases.find(p => met >= p.startMet && met < p.endMet)
-                        if (phase && !seen.has(phase.name) && phase.name !== 'Launch & Ascent' && phase.name !== 'Trans-Lunar Injection' && phase.name !== 'Re-entry & Splashdown') {
+                        const totalDuration = phases.length > 0 ? phases[phases.length - 1].endMet - phases[0].startMet : 1
+                        if (phase && !seen.has(phase.name) && (phase.endMet - phase.startMet) / totalDuration > 0.02) {
                             seen.add(phase.name)
                             const phasePoints = sampled.filter(tp => {
                                 const m = tp.timestamp - launchTimestamp

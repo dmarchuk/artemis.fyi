@@ -2,21 +2,21 @@
 
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { formatMET, metToLocalTime } from '@/lib/format'
-import { LAUNCH_TIME } from '@/lib/milestones'
 
 interface Props {
     metSeconds: number
+    launchTime: Date
     className?: string
 }
 
-export default function MetLabel({ metSeconds, className }: Props) {
+export default function MetLabel({ metSeconds, launchTime, className }: Props) {
     return (
         <Tooltip>
             <TooltipTrigger render={<span />} className={className}>
                 {formatMET(metSeconds)}
             </TooltipTrigger>
             <TooltipContent>
-                {metToLocalTime(metSeconds, LAUNCH_TIME)}
+                {metToLocalTime(metSeconds, launchTime)}
             </TooltipContent>
         </Tooltip>
     )
